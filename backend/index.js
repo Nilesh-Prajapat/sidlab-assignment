@@ -1,15 +1,9 @@
-const app = require("./src/app");
-const connect_db = require("./src/config/db");
 require("dotenv").config();
 
-let isConnected = false;
+const app = require("./src/app");
+const connectDB = require("./src/config/db");
 
 module.exports = async (req, res) => {
-  if (!isConnected) {
-    await connect_db();
-    isConnected = true;
-    console.log("DB connected 🚀");
-  }
-
+  await connectDB();
   return app(req, res);
 };
