@@ -1,0 +1,109 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap");
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --font-sans: "Inter", system-ui, sans-serif;
+}
+
+/* ── Pure dark, high-contrast black & white ── */
+:root {
+  --radius: 0.75rem;
+  --background: oklch(0.05 0 0);
+  --foreground: oklch(0.97 0 0);
+  --card: oklch(0.1 0 0);
+  --card-foreground: oklch(0.97 0 0);
+  --popover: oklch(0.1 0 0);
+  --popover-foreground: oklch(0.97 0 0);
+  --primary: oklch(0.97 0 0);
+  --primary-foreground: oklch(0.05 0 0);
+  --secondary: oklch(0.15 0 0);
+  --secondary-foreground: oklch(0.97 0 0);
+  --muted: oklch(0.15 0 0);
+  --muted-foreground: oklch(0.55 0 0);
+  --accent: oklch(0.18 0 0);
+  --accent-foreground: oklch(0.97 0 0);
+  --destructive: oklch(0.55 0.2 27);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 10%);
+  --ring: oklch(0.5 0 0);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+::selection {
+  background-color: oklch(0.97 0 0);
+  color: oklch(0.05 0 0);
+}
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: oklch(0.08 0 0); }
+::-webkit-scrollbar-thumb { background: oklch(0.22 0 0); border-radius: 2px; }
+
+/* ── Animations ── */
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in-up             { animation: fade-in-up 0.7s ease-out forwards; }
+.animate-fade-in-up-delay-1     { animation: fade-in-up 0.7s ease-out 0.12s forwards; opacity: 0; }
+.animate-fade-in-up-delay-2     { animation: fade-in-up 0.7s ease-out 0.24s forwards; opacity: 0; }
+.animate-fade-in-up-delay-3     { animation: fade-in-up 0.7s ease-out 0.36s forwards; opacity: 0; }
+
+/* ── Diagram box styles ── */
+.diagram-box {
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background: rgba(255,255,255,0.025);
+}
+.diagram-box-header {
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  padding: 0.6rem 1rem;
+  background: rgba(255,255,255,0.04);
+}
+.diagram-macro {
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 1.25rem;
+  padding: 1.75rem;
+  background: rgba(255,255,255,0.02);
+}
+
+@layer base {
+  * { @apply border-border outline-ring/50; }
+  body { @apply bg-background text-foreground; }
+}
