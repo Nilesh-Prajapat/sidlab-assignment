@@ -1,6 +1,7 @@
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const config = require("../config/config");
 
 exports.register = async (req, res) => {
   try {
@@ -22,8 +23,8 @@ exports.register = async (req, res) => {
 
     const token = jwt.sign(
       { userId: user._id },
-      process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_TIME }
+      config.jwtSecret,
+      { expiresIn: config.jwtTime }
     );
 
     res.status(201).json({
@@ -57,8 +58,8 @@ exports.login = async (req, res) => {
 
     const token = jwt.sign(
       { userId: user._id },
-      process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_TIME }
+      config.jwtSecret,
+      { expiresIn: config.jwtTime }
     );
 
     res.json({
