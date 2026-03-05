@@ -21,11 +21,40 @@ const taskSchema = new mongoose.Schema(
   completed: {
     type: Boolean,
     default: false
+  },
+
+  dueDate: {
+    type: Date,
+    default: null
+  },
+
+  priority: {
+    type: String,
+    enum: ["LOW", "MEDIUM", "HIGH"],
+    default: "MEDIUM"
   }
+
 },
 {
-  timestamps: true
-}
-);
+  timestamps: true,
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
+});
+
+
+// ── virtual status field ─────────────────────────────
+taskSchema.virtual("status").get(function () {
+
+  if (this.completed) {
+    return "DONE";
+  }
+
+  if (this.dueDate && new Date() > this.dueDate) {
+    return "OVERDUE";
+  }
+
+  return "ACTIVE";
+});
+
 
 module.exports = mongoose.model("Task", taskSchema);
