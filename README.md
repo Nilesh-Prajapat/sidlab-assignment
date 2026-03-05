@@ -1,6 +1,12 @@
 # TaskFlow — Personal Task Manager
 
-A full-stack personal task manager built as a SidLabs internship assignment.
+> Flutter full-stack internship assignment — SidLabs
+
+**Live Website:** [sidlab-assignment-hnv6.vercel.app](https://sidlab-assignment-hnv6.vercel.app)  
+**Backend API:** [sidlab-assignment.vercel.app/api](https://sidlab-assignment.vercel.app/api)  
+**APK Download:** Available on the landing page
+
+---
 
 ## Stack
 
@@ -9,9 +15,9 @@ A full-stack personal task manager built as a SidLabs internship assignment.
 | Mobile App   | Flutter + Dart + BLoC                      |
 | Landing Page | React JS (Vite) + Tailwind CSS + shadcn/ui |
 | Backend API  | Node.js + Express                          |
-| Database     | MongoDB (Mongoose)                         |
+| Database     | MongoDB Atlas (Mongoose)                   |
 | Auth         | JWT + bcrypt                               |
-| Hosting      | Vercel (backend)                           |
+| Hosting      | Vercel                                     |
 
 ---
 
@@ -28,16 +34,16 @@ sidlab-assignment/
 
 ---
 
-## Quick Start
+## Local Setup
 
-### 1. Backend
+### Backend
 
 ```bash
 cd backend
 npm install
 ```
 
-Create `.env`:
+Create `backend/.env`:
 
 ```env
 PORT=5000
@@ -47,17 +53,14 @@ JWT_REFRESH_SECRET=your_refresh_secret
 ```
 
 ```bash
-npm run dev        # development
-npm start          # production
+npm run dev
 ```
 
 API runs at `http://localhost:5000`
 
-**Live API:** `https://sidlab-assignment.vercel.app`
-
 ---
 
-### 2. Mobile (Flutter)
+### Mobile (Flutter)
 
 ```bash
 cd mobile
@@ -65,11 +68,9 @@ flutter pub get
 flutter run
 ```
 
-> Update the base URL in `lib/api_service/auth_service.dart` and `task_service.dart` if your backend is running locally.
-
 ---
 
-### 3. Website (React)
+### Website (React)
 
 ```bash
 cd website
@@ -87,45 +88,46 @@ Website runs at `http://localhost:5173`
 
 ---
 
-## API Endpoints
+## API Reference
 
-| Method | Endpoint                  | Auth | Description     |
-| ------ | ------------------------- | ---- | --------------- |
-| POST   | `/api/auth/register`      | —    | Register user   |
-| POST   | `/api/auth/login`         | —    | Login → JWT     |
-| GET    | `/api/tasks`              | 🔒   | List user tasks |
-| POST   | `/api/tasks`              | 🔒   | Create task     |
-| PUT    | `/api/tasks/:id`          | 🔒   | Update task     |
-| DELETE | `/api/tasks/:id`          | 🔒   | Delete task     |
-| PATCH  | `/api/tasks/:id/complete` | 🔒   | Toggle complete |
-| POST   | `/api/contact`            | —    | Contact form    |
+All protected routes require `Authorization: Bearer <token>`.
+
+| Method | Endpoint                  | Auth | Description       |
+| ------ | ------------------------- | ---- | ----------------- |
+| POST   | `/api/auth/register`      | —    | Register user     |
+| POST   | `/api/auth/login`         | —    | Login → JWT       |
+| GET    | `/api/tasks`              | 🔒   | List user's tasks |
+| POST   | `/api/tasks`              | 🔒   | Create task       |
+| PUT    | `/api/tasks/:id`          | 🔒   | Update task       |
+| DELETE | `/api/tasks/:id`          | 🔒   | Delete task       |
+| PATCH  | `/api/tasks/:id/complete` | 🔒   | Toggle complete   |
+| POST   | `/api/contact`            | —    | Contact form      |
 
 ---
 
 ## Features
 
 - **Auth** — Register, login, logout, persistent JWT session
-- **Tasks** — Create, read, update, delete, mark complete
-- **Priorities** — LOW / MEDIUM / HIGH per task
-- **Filters** — Filter by status, priority, keyword
+- **Tasks** — Full CRUD, mark complete, due dates, priority levels (LOW/MEDIUM/HIGH)
 - **Dashboard** — Live stats: total, completed, pending
+- **Filters** — Search and filter by status, priority, keyword
 - **Contact** — Landing page form stored in MongoDB
-- **Responsive** — Mobile-first Flutter app + responsive React site
+- **Responsive** — Mobile-first Flutter app + responsive React landing page
+- **Security** — bcrypt hashing, JWT auth, protected routes, env secrets
 
 ---
 
 ## Architectural Decisions
 
-See [`ARCHITECTURE.md`](./ARCHITECTURE.md) for detailed decisions.
+See [`ARCHITECTURE.md`](./ARCHITECTURE.md) for the full breakdown covering:
+
+- System diagram
+- Task ownership model
+- JWT stateless auth
+- BLoC state management
+- Database schema decisions
+- Security considerations
 
 ---
 
-## Submission
-
-- **GitHub:** [sidlab-assignment](https://github.com/Nilesh-Prajapat/sidlab-assignment)
-- **Live API:** `https://sidlab-assignment.vercel.app`
-- **APK:** `website/public/TaskFlow.apk`
-
----
-
-_Made by Nilesh Prajapat — SidLabs Flutter Full-Stack Developer Internship Assignment_
+_Nilesh Prajapat — SidLabs Flutter Full-Stack Developer Internship_
