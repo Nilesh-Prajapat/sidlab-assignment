@@ -1,6 +1,22 @@
+import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 
 export default function Navbar() {
+  const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    // Watch the footer — hide dock when footer enters viewport
+    const footer = document.querySelector('footer');
+    if (!footer) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setVisible(!entry.isIntersecting),
+      { threshold: 0.05 }
+    );
+    observer.observe(footer);
+    return () => observer.disconnect();
+  }, []);
+
   const links = [
     { label: 'Features', href: '#features' },
     { label: 'Architecture', href: '#architecture' },
@@ -9,24 +25,26 @@ export default function Navbar() {
   ];
 
   return (
-    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
+    <div
+      className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-50 transition-all duration-300 ${
+        visible
+          ? 'opacity-100 translate-y-0'
+          : 'opacity-0 translate-y-4 pointer-events-none'
+      }`}
+    >
       <nav className="flex items-center gap-1 px-2 py-2 rounded-2xl bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] shadow-2xl shadow-black/40">
         {/* Logo */}
         <a
           href="#"
           className="flex items-center justify-center w-10 h-10 rounded-lg bg-white/[0.08] hover:bg-white/[0.12] transition-colors"
         >
-          <img
-            src="/logo.png"
-            alt="TaskFlow"
-            className="w-8 h-8 object-cover scale-110"
-          />
+          <img src="/logo.png" alt="TaskFlow" className="w-8 h-8 object-cover scale-110" />
         </a>
 
         {/* Divider */}
         <div className="w-px h-6 bg-white/[0.08] mx-1 hidden sm:block" />
 
-        {/* Links - hidden on very small screens */}
+        {/* Links */}
         <div className="hidden sm:flex items-center gap-0.5">
           {links.map((link) => (
             <a

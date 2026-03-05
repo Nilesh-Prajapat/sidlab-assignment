@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 
-// All images that need to be preloaded before showing the site
 const IMAGES_TO_PRELOAD = [
   '/logo.png',
   '/framed/s1.png',
@@ -11,51 +10,39 @@ const IMAGES_TO_PRELOAD = [
   '/framed/s6.png',
 ];
 
-function preloadImages(urls) {
-  return Promise.all(
-    urls.map(
-      (src) =>
-        new Promise((resolve) => {
-          const img = new Image();
-          img.onload = resolve;
-          img.onerror = resolve; // don't block on missing images
-          img.src = src;
-        })
-    )
-  );
-}
-
 export default function SplashScreen({ onDone }) {
   const [progress, setProgress] = useState(0);
   const [leaving, setLeaving] = useState(false);
 
   useEffect(() => {
-    let loaded = 0;
-    const total = IMAGES_TO_PRELOAD.length;
+    // ── 1. Smooth progress bar over exactly 3000ms ──
+    const DURATION = 3000;
+    const INTERVAL = 30; // update every 30ms → 100 steps
+    let elapsed = 0;
 
-    const promises = IMAGES_TO_PRELOAD.map(
-      (src) =>
-        new Promise((resolve) => {
-          const img = new Image();
-          img.onload = img.onerror = () => {
-            loaded += 1;
-            setProgress(Math.round((loaded / total) * 100));
-            resolve();
-          };
-          img.src = src;
-        })
-    );
+    const ticker = setInterval(() => {
+      elapsed += INTERVAL;
+      const pct = Math.min(Math.round((elapsed / DURATION) * 100), 100);
+      setProgress(pct);
+      if (pct >= 100) clearInterval(ticker);
+    }, INTERVAL);
 
-    // Wait for BOTH: all images loaded AND minimum 3s display time
-    const minTimer = new Promise((resolve) => setTimeout(resolve, 3000));
-
-    Promise.all([...promises, minTimer]).then(() => {
-      setProgress(100);
-      setTimeout(() => {
-        setLeaving(true);
-        setTimeout(onDone, 500); // match CSS fade-out
-      }, 300);
+    // ── 2. Preload images in the background (silent) ──
+    IMAGES_TO_PRELOAD.forEach((src) => {
+      const img = new Image();
+      img.src = src;
     });
+
+    // ── 3. Dismiss after 3s + 300ms pause + 500ms fade ──
+    const dismiss = setTimeout(() => {
+      setLeaving(true);
+      setTimeout(onDone, 500);
+    }, DURATION + 300);
+
+    return () => {
+      clearInterval(ticker);
+      clearTimeout(dismiss);
+    };
   }, [onDone]);
 
   return (
@@ -71,7 +58,6 @@ export default function SplashScreen({ onDone }) {
           alt="TaskFlow"
           className="w-16 h-16 object-cover scale-110 animate-pulse"
         />
-        {/* Spinning ring */}
         <div className="absolute inset-0 -m-3 rounded-full border border-white/[0.08] animate-spin [animation-duration:3s]" />
       </div>
 
@@ -81,8 +67,11 @@ export default function SplashScreen({ onDone }) {
       {/* Progress bar */}
       <div className="w-48 h-px bg-white/[0.08] rounded-full overflow-hidden">
         <div
-          className="h-full bg-white/60 transition-all duration-200 ease-out rounded-full"
-          style={{ width: `${progress}%` }}
+          className="h-full bg-white/60 rounded-full"
+          style={{
+            width: `${progress}%`,
+            transition: 'width 30ms linear',
+          }}
         />
       </div>
       <p className="font-mono text-[10px] text-white/15 mt-3">{progress}%</p>
