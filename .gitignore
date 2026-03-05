@@ -20,9 +20,13 @@ package-lock.json
 dist/
 build/
 coverage/
+mobile/build/
+mobile/coverage/
+mobile/android/app/build/
+mobile/android/.gradle/
 
 # ========================
-# Flutter
+# Flutter / Mobile
 # ========================
 .dart_tool/
 .flutter-plugins
@@ -30,11 +34,72 @@ coverage/
 .packages
 .pub-cache/
 .pub/
-build/
-ios/Pods/
-ios/.symlinks/
-android/.gradle/
-android/app/build/
+mobile/.dart_tool/
+mobile/.flutter-plugins
+mobile/.flutter-plugins-dependencies
+mobile/.packages
+mobile/.pub-cache/
+mobile/.pub/
+
+# ========================
+# Android Specific
+# ========================
+mobile/android/gradle-wrapper.jar
+mobile/android/.gradle
+mobile/android/captures/
+mobile/android/gradlew
+mobile/android/gradlew.bat
+mobile/android/local.properties
+mobile/android/GeneratedPluginRegistrant.java
+mobile/android/.cxx/
+mobile/android/key.properties
+mobile/android/**/*.keystore
+mobile/android/**/*.jks
+
+# Android build artifacts
+mobile/android/app/debug
+mobile/android/app/profile
+mobile/android/app/release
+
+# ========================
+# iOS Specific
+# ========================
+mobile/ios/Pods/
+mobile/ios/.symlinks/
+mobile/ios/**/dgph
+mobile/ios/*.mode1v3
+mobile/ios/*.mode2v3
+mobile/ios/*.moved-aside
+mobile/ios/*.pbxuser
+mobile/ios/*.perspectivev3
+mobile/ios/**/*sync/
+mobile/ios/.sconsign.dblite
+mobile/ios/.tags*
+mobile/ios/**/.vagrant/
+mobile/ios/**/DerivedData/
+mobile/ios/Icon?
+mobile/ios/**/Pods/
+mobile/ios/**/.symlinks/
+mobile/ios/profile
+mobile/ios/xcuserdata
+mobile/ios/**/.generated/
+mobile/ios/Flutter/App.framework
+mobile/ios/Flutter/Flutter.framework
+mobile/ios/Flutter/Flutter.podspec
+mobile/ios/Flutter/Generated.xcconfig
+mobile/ios/Flutter/ephemeral/
+mobile/ios/Flutter/app.flx
+mobile/ios/Flutter/app.zip
+mobile/ios/Flutter/flutter_assets/
+mobile/ios/Flutter/flutter_export_environment.sh
+mobile/ios/ServiceDefinitions.json
+mobile/ios/Runner/GeneratedPluginRegistrant.*
+
+# iOS Exceptions
+!mobile/ios/default.mode1v3
+!mobile/ios/default.mode2v3
+!mobile/ios/default.pbxuser
+!mobile/ios/default.perspectivev3
 
 # ========================
 # IDE
@@ -42,9 +107,42 @@ android/app/build/
 .vscode/
 .idea/
 *.iml
+mobile/*.iml
+mobile/*.ipr
+mobile/*.iws
+mobile/.idea/
+mobile/mobile.iml
+mobile/android/mobile_android.iml
+mobile/ios/Runner.iml
+
+# IntelliJ shelf and workspace
+mobile/.idea/shelf/
+mobile/.idea/workspace.xml
 
 # ========================
 # OS Files
 # ========================
 .DS_Store
 Thumbs.db
+mobile/.DS_Store
+
+# ========================
+# Miscellaneous
+# ========================
+*.class
+*.log
+*.pyc
+*.swp
+mobile/*.class
+mobile/*.log
+mobile/*.pyc
+mobile/*.swp
+mobile/.atom/
+mobile/.build/
+mobile/.buildlog/
+mobile/.history
+mobile/.svn/
+mobile/.swiftpm/
+mobile/migrate_working_dir/
+mobile/app.*.symbols
+mobile/app.*.map.json
