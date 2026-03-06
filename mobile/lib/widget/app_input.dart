@@ -10,6 +10,7 @@ class AppInput extends StatelessWidget {
   final TextEditingController? controller;
   final Widget? suffix;
   final TextInputType? keyboardType;
+  final String? Function(String?)? validator;
 
   const AppInput({
     super.key,
@@ -19,6 +20,7 @@ class AppInput extends StatelessWidget {
     this.controller,
     this.suffix,
     this.keyboardType,
+    this.validator,
   });
 
   @override
@@ -26,22 +28,41 @@ class AppInput extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label.toUpperCase(),
-          style: GoogleFonts.spaceGrotesk(
-            color: AppColors.textDim,
-            fontSize: 11,
-            fontWeight: FontWeight.w500,
-            letterSpacing: 1.5,
+        if (label.isNotEmpty) ...[
+          Text(
+            label.toUpperCase(),
+            style: GoogleFonts.spaceGrotesk(
+              color: AppColors.textDim,
+              fontSize: 11,
+              fontWeight: FontWeight.w500,
+              letterSpacing: 1.5,
+            ),
           ),
-        ),
-        const SizedBox(height: 6),
-        TextField(
+          const SizedBox(height: 6),
+        ],
+        validator != null
+            ? TextFormField(
+          controller: controller,
+          obscureText: obscure,
+          keyboardType: keyboardType,
+          validator: validator,
+          style: GoogleFonts.spaceGrotesk(
+              color: AppColors.textMain,
+              fontSize: 15,
+              fontWeight: FontWeight.w400),
+          decoration: InputDecoration(
+            hintText: placeholder,
+            suffixIcon: suffix,
+          ),
+        )
+            : TextField(
           controller: controller,
           obscureText: obscure,
           keyboardType: keyboardType,
           style: GoogleFonts.spaceGrotesk(
-              color: AppColors.textMain, fontSize: 15, fontWeight: FontWeight.w400),
+              color: AppColors.textMain,
+              fontSize: 15,
+              fontWeight: FontWeight.w400),
           decoration: InputDecoration(
             hintText: placeholder,
             suffixIcon: suffix,

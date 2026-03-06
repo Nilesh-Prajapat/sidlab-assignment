@@ -42,19 +42,16 @@ const taskSchema = new mongoose.Schema(
 });
 
 
-// ── virtual status field ─────────────────────────────
+// Virtual field for task status
 taskSchema.virtual("status").get(function () {
 
-  if (this.completed) {
-    return "DONE";
-  }
+  if (this.completed) return "DONE";
 
-  if (this.dueDate && new Date() > this.dueDate) {
+  if (this.dueDate && new Date() > new Date(this.dueDate)) {
     return "OVERDUE";
   }
 
   return "ACTIVE";
 });
-
 
 module.exports = mongoose.model("Task", taskSchema);

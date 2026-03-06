@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 import '../../api_service/auth_bloc.dart';
 import '../../utils/theme/colors.dart';
 import '../../utils/validator.dart';
 import '../../widget/app_button.dart';
 import '../../widget/app_input.dart';
+import 'forgot_password_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -55,7 +57,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 24),
                   Center(
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 6),
                       decoration: BoxDecoration(
                         color: AppColors.layer2,
                         borderRadius: BorderRadius.circular(100),
@@ -75,13 +78,17 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 28),
                   Text('Welcome back.',
                       style: GoogleFonts.spaceGrotesk(
-                          color: AppColors.textMain, fontSize: 30,
-                          fontWeight: FontWeight.w600, letterSpacing: -0.5)),
+                          color: AppColors.textMain,
+                          fontSize: 30,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: -0.5)),
                   const SizedBox(height: 6),
                   Text('Sign in to your workspace.',
                       style: GoogleFonts.spaceGrotesk(
                           color: AppColors.textDim, fontSize: 15)),
                   const SizedBox(height: 28),
+
+                  /// DOT GRID BANNER
                   Container(
                     width: double.infinity,
                     height: 160,
@@ -92,7 +99,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     child: Stack(
                       children: [
-                        Positioned.fill(child: CustomPaint(painter: _DotGridPainter())),
+                        Positioned.fill(
+                            child: CustomPaint(painter: _DotGridPainter())),
                         Center(
                           child: Container(
                             padding: const EdgeInsets.all(14),
@@ -101,21 +109,25 @@ class _LoginScreenState extends State<LoginScreen> {
                               borderRadius: BorderRadius.circular(8),
                               border: Border.all(color: AppColors.border),
                             ),
-                            child: Icon(Icons.check,
+                            child: const Icon(Icons.check,
                                 color: AppColors.textMuted, size: 28),
                           ),
                         ),
                       ],
                     ),
                   ),
+
                   const SizedBox(height: 28),
+
                   AppInput(
                     label: 'Email',
                     placeholder: 'user@example.com',
                     controller: _email,
                     keyboardType: TextInputType.emailAddress,
                   ),
+
                   const SizedBox(height: 16),
+
                   AppInput(
                     label: 'Password',
                     placeholder: '••••••••',
@@ -124,33 +136,67 @@ class _LoginScreenState extends State<LoginScreen> {
                     suffix: GestureDetector(
                       onTap: () => setState(() => _obscure = !_obscure),
                       child: Icon(
-                          _obscure ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-                          color: AppColors.textDead, size: 18),
+                          _obscure
+                              ? Icons.visibility_off_outlined
+                              : Icons.visibility_outlined,
+                          color: AppColors.textDead,
+                          size: 18),
                     ),
                   ),
 
-                  const SizedBox(height: 28),
+                  const SizedBox(height: 12),
+
+                  /// FORGOT PASSWORD
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: GestureDetector(
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => const ForgotPasswordScreen()),
+                      ),
+                      child: Text(
+                        'Forgot password?',
+                        style: GoogleFonts.spaceGrotesk(
+                          color: AppColors.textDim,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 24),
+
                   AppButton(
                     label: loading ? 'Signing in...' : 'Sign in',
-                    onTap: loading ? null : () {
+                    onTap: loading
+                        ? null
+                        : () {
                       final emailErr = Validators.email(_email.text);
                       final passErr  = Validators.password(_password.text);
                       final err = emailErr ?? passErr;
                       if (err != null) {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: Text(err,
-                              style: GoogleFonts.spaceGrotesk(color: AppColors.textMain)),
-                          backgroundColor: AppColors.layer2,
-                          behavior: SnackBarBehavior.floating,
-                        ));
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(err,
+                                style: GoogleFonts.spaceGrotesk(
+                                    color: AppColors.textMain)),
+                            backgroundColor: AppColors.layer2,
+                            behavior: SnackBarBehavior.floating,
+                          ),
+                        );
                         return;
                       }
                       context.read<AuthBloc>().add(AuthLoginRequested(
-                        email: _email.text.trim(),
+                        email:    _email.text.trim(),
                         password: _password.text,
                       ));
-                    },         ),
+                    },
+                  ),
+
                   const SizedBox(height: 20),
+
                   Center(
                     child: GestureDetector(
                       onTap: () => Navigator.pushNamed(context, '/register'),
@@ -163,13 +209,15 @@ class _LoginScreenState extends State<LoginScreen> {
                             TextSpan(
                                 text: 'Create one',
                                 style: GoogleFonts.spaceGrotesk(
-                                    color: AppColors.textMain, fontSize: 13,
+                                    color: AppColors.textMain,
+                                    fontSize: 13,
                                     fontWeight: FontWeight.w500)),
                           ],
                         ),
                       ),
                     ),
                   ),
+
                   const SizedBox(height: 32),
                 ],
               ),
@@ -195,6 +243,7 @@ class _DotGridPainter extends CustomPainter {
       }
     }
   }
+
   @override
   bool shouldRepaint(_) => false;
 }

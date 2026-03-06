@@ -1,33 +1,31 @@
 const Task = require("../models/task");
 
-const computeStatus = (task) => {
-  if (task.completed) return "DONE";
-  if (task.dueDate && new Date() > new Date(task.dueDate)) return "OVERDUE";
-  return "ACTIVE";
-};
 
+// GET ALL TASKS
 exports.get_tasks = async (req, res) => {
   try {
+
     const tasks = await Task.find({ userId: req.userId }).sort({
       completed: 1,
       dueDate: 1,
       createdAt: -1
     });
 
-    const result = tasks.map((task) => {
-      const obj = task.toObject();
-      obj.status = computeStatus(obj);
-      return obj;
-    });
+    res.json(tasks);
 
-    res.json(result);
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+
+    res.status(500).json({ message: error.message });
+
   }
 };
 
+
+
+// CREATE TASK
 exports.create_task = async (req, res) => {
   try {
+
     const { title, description, dueDate, priority } = req.body;
 
     const task = await Task.create({
@@ -38,17 +36,21 @@ exports.create_task = async (req, res) => {
       priority: priority || "MEDIUM"
     });
 
-    const obj = task.toObject();
-    obj.status = computeStatus(obj);
+    res.status(201).json(task);
 
-    res.status(201).json(obj);
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+
+    res.status(500).json({ message: error.message });
+
   }
 };
 
+
+
+// UPDATE TASK
 exports.update_task = async (req, res) => {
   try {
+
     const task = await Task.findOneAndUpdate(
       { _id: req.params.id, userId: req.userId },
       req.body,
@@ -59,17 +61,21 @@ exports.update_task = async (req, res) => {
       return res.status(404).json({ message: "Task not found" });
     }
 
-    const obj = task.toObject();
-    obj.status = computeStatus(obj);
+    res.json(task);
 
-    res.json(obj);
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+
+    res.status(500).json({ message: error.message });
+
   }
 };
 
+
+
+// DELETE TASK
 exports.delete_task = async (req, res) => {
   try {
+
     const task = await Task.findOneAndDelete({
       _id: req.params.id,
       userId: req.userId
@@ -80,13 +86,20 @@ exports.delete_task = async (req, res) => {
     }
 
     res.json({ message: "Task deleted" });
+
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+
+    res.status(500).json({ message: error.message });
+
   }
 };
 
+
+
+// TOGGLE TASK COMPLETE
 exports.toggle_complete = async (req, res) => {
   try {
+
     const task = await Task.findOne({
       _id: req.params.id,
       userId: req.userId
@@ -100,11 +113,11 @@ exports.toggle_complete = async (req, res) => {
 
     await task.save();
 
-    const obj = task.toObject();
-    obj.status = computeStatus(obj);
+    res.json(task);
 
-    res.json(obj);
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+
+    res.status(500).json({ message: error.message });
+
   }
 };

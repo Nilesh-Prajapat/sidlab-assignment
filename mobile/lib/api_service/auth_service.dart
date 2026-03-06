@@ -1,13 +1,14 @@
 import 'dart:convert';
-// ignore: depend_on_referenced_packages
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class AuthService {
 
-  static const _base = 'https://sidlab-assignment.vercel.app/api';
+  static const _base =
+      'https://sidlab-assignment.vercel.app/api';
 
   final _storage = const FlutterSecureStorage();
+
 
   /// REGISTER
   Future<Map<String, dynamic>> register({
@@ -22,7 +23,7 @@ class AuthService {
       body: jsonEncode({
         'name': name,
         'email': email,
-        'password': password
+        'password': password,
       }),
     );
 
@@ -33,6 +34,7 @@ class AuthService {
     final data = jsonDecode(res.body);
 
     await _storage.write(key: 'token', value: data['token']);
+
     await _storage.write(
       key: 'user',
       value: jsonEncode(data['user']),
@@ -40,6 +42,7 @@ class AuthService {
 
     return data['user'];
   }
+
 
   /// LOGIN
   Future<Map<String, dynamic>> login({
@@ -52,7 +55,7 @@ class AuthService {
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'email': email,
-        'password': password
+        'password': password,
       }),
     );
 
@@ -72,17 +75,89 @@ class AuthService {
     return data['user'];
   }
 
+
+  /// FORGOT PASSWORD
+  Future<void> forgotPassword({
+    required String email,
+    required String petName,
+    required String newPassword,
+  }) async {
+
+    final res = await http.post(
+      Uri.parse('$_base/auth/forgot-password'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'email': email,
+        'petName': petName,
+        'newPassword': newPassword,
+      }),
+    );
+
+    if (res.statusCode != 200) {
+      throw Exception(jsonDecode(res.body)['message']);
+    }
+  }
+
+
+  /// CHANGE PASSWORD
+  Future<void> changePassword({
+    required String oldPassword,
+    required String newPassword,
+  }) async {
+
+    final token = await getToken();
+
+    final res = await http.put(
+      Uri.parse('$_base/auth/change-password'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token'
+      },
+      body: jsonEncode({
+        'oldPassword': oldPassword,
+        'newPassword': newPassword,
+      }),
+    );
+
+    if (res.statusCode != 200) {
+      throw Exception(jsonDecode(res.body)['message']);
+    }
+  }
+
+
+  /// DELETE ACCOUNT
+  Future<void> deleteAccount() async {
+
+    final token = await getToken();
+
+    final res = await http.delete(
+      Uri.parse('$_base/auth/delete-account'),
+      headers: {
+        'Authorization': 'Bearer $token'
+      },
+    );
+
+    if (res.statusCode != 200) {
+      throw Exception(jsonDecode(res.body)['message']);
+    }
+
+    await logout();
+  }
+
+
   /// LOGOUT
   Future<void> logout() async {
     await _storage.deleteAll();
   }
+
 
   /// GET TOKEN
   Future<String?> getToken() async {
     return await _storage.read(key: 'token');
   }
 
-  /// GET STORED USER
+
+  /// GET USER
   Future<Map<String, dynamic>?> getUser() async {
 
     final raw = await _storage.read(key: 'user');
@@ -91,6 +166,7 @@ class AuthService {
 
     return jsonDecode(raw);
   }
+
 
   /// LOGIN STATUS
   Future<bool> isLoggedIn() async {

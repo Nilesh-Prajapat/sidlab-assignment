@@ -9,69 +9,78 @@ import '../../widget/app_top_bar.dart';
 import '../../widget/avatar.dart';
 import '../../widget/status_badge.dart';
 
+import 'about_screen.dart';
+import 'appearance_screen.dart';
+import 'help_support_screen.dart';
+import 'personal_information_screen.dart';
+import 'privacy_security_screen.dart';
+
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
+  void _push(BuildContext context, Widget screen) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => screen),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       backgroundColor: AppColors.topBar,
-
       body: Column(
         children: [
 
           const AppTopBar(
-            title: "Profile",
-            subtitle: "Manage your account",
+            title: 'Profile',
+            subtitle: 'Manage your account',
           ),
-          /// CONTENT CARD
+
           Expanded(
             child: Container(
               width: double.infinity,
-
               decoration: const BoxDecoration(
                 color: AppColors.base,
                 borderRadius: BorderRadius.vertical(
                   top: Radius.circular(28),
                 ),
               ),
-
               clipBehavior: Clip.antiAlias,
-
               child: BlocBuilder<AuthBloc, AuthState>(
                 builder: (context, authState) {
 
-                  String name = "User";
-                  String email = "";
+                  String name  = 'User';
+                  String email = '';
 
                   if (authState is AuthAuthenticated) {
-                    name = authState.user['name'] ?? "User";
-                    email = authState.user['email'] ?? "";
+                    name  = authState.user['name']  ?? 'User';
+                    email = authState.user['email'] ?? '';
                   }
 
                   return BlocBuilder<TaskBloc, TaskState>(
                     builder: (context, taskState) {
 
-                      int total = 0;
-                      int done = 0;
+                      int total  = 0;
+                      int done   = 0;
                       int active = 0;
 
                       if (taskState is TaskLoaded) {
-                        total = taskState.tasks.length;
-                        done = taskState.tasks.where((t) => t['completed'] == true).length;
+                        total  = taskState.tasks.length;
+                        done   = taskState.tasks
+                            .where((t) => t['completed'] == true)
+                            .length;
                         active = total - done;
                       }
 
                       return SingleChildScrollView(
                         padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
-
                         child: Column(
                           children: [
 
                             const SizedBox(height: 10),
 
-                            /// USER AVATAR
+                            /// AVATAR
                             InitialsAvatar(name: name, size: 72),
 
                             const SizedBox(height: 14),
@@ -112,60 +121,76 @@ class ProfileScreen extends StatelessWidget {
                             /// STATS
                             StatStrip(
                               stats: [
-                                (label: 'Done', value: done.toString()),
+                                (label: 'Done',   value: done.toString()),
                                 (label: 'Active', value: active.toString()),
-                                (label: 'Total', value: total.toString()),
+                                (label: 'Total',  value: total.toString()),
                               ],
                             ),
 
                             const SizedBox(height: 24),
 
                             /// SETTINGS GROUP 1
-                            const _ActionGroup(items: [
+                            _ActionGroup(items: [
                               _ActionItem(
                                 icon: Icons.person_outline_rounded,
                                 label: 'Personal Information',
+                                onTap: () => _push(
+                                  context,
+                                  const PersonalInformationScreen(),
+                                ),
                               ),
-                              const _ActionItem(
-                                icon: Icons.notifications_none_rounded,
-                                label: 'Notifications',
-                              ),
+
                               _ActionItem(
                                 icon: Icons.palette_outlined,
                                 label: 'Appearance',
                                 trailing: 'Dark',
+                                onTap: () => _push(
+                                  context,
+                                  const AppearanceScreen(),
+                                ),
                               ),
                               _ActionItem(
                                 icon: Icons.lock_outline_rounded,
                                 label: 'Privacy & Security',
+                                onTap: () => _push(
+                                  context,
+                                  const PrivacySecurityScreen(),
+                                ),
                               ),
                             ]),
 
                             const SizedBox(height: 12),
 
                             _ActionGroup(items: [
-                              const _ActionItem(
+                              _ActionItem(
                                 icon: Icons.help_outline_rounded,
                                 label: 'Help & Support',
+                                onTap: () => _push(
+                                  context,
+                                  const HelpSupportScreen(),
+                                ),
                               ),
-                              const _ActionItem(
+                              _ActionItem(
                                 icon: Icons.info_outline_rounded,
                                 label: 'About',
+                                onTap: () => _push(
+                                  context,
+                                  const AboutScreen(),
+                                ),
                               ),
-
                               _ActionItem(
                                 icon: Icons.logout_rounded,
                                 label: 'Log Out',
                                 labelColor: AppColors.textDim,
                                 iconColor: AppColors.textDead,
                                 onTap: () {
-
-                                  context.read<AuthBloc>().add(AuthLogoutRequested());
-
+                                  context
+                                      .read<AuthBloc>()
+                                      .add(AuthLogoutRequested());
                                   Navigator.pushNamedAndRemoveUntil(
                                     context,
                                     '/login',
-                                        (_) => false,
+                                    (_) => false,
                                   );
                                 },
                               ),
@@ -186,9 +211,11 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 }
+
+// ── ACTION GROUP ─────────────────────────────────────────────
+
 class _ActionGroup extends StatelessWidget {
   final List<_ActionItem> items;
-
   const _ActionGroup({required this.items});
 
   @override
@@ -211,6 +238,8 @@ class _ActionGroup extends StatelessWidget {
   }
 }
 
+// ── ACTION ITEM ──────────────────────────────────────────────
+
 class _ActionItem extends StatelessWidget {
   final IconData icon;
   final String label;
@@ -231,7 +260,7 @@ class _ActionItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final labelClr = labelColor ?? AppColors.textMain;
-    final iconClr = iconColor ?? AppColors.textDim;
+    final iconClr  = iconColor  ?? AppColors.textDim;
 
     return InkWell(
       onTap: onTap ?? () {},
@@ -240,11 +269,8 @@ class _ActionItem extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
         child: Row(
           children: [
-
             Icon(icon, color: iconClr, size: 18),
-
             const SizedBox(width: 14),
-
             Expanded(
               child: Text(
                 label,
@@ -255,7 +281,6 @@ class _ActionItem extends StatelessWidget {
                 ),
               ),
             ),
-
             if (trailing != null)
               Text(
                 trailing!,
@@ -264,9 +289,7 @@ class _ActionItem extends StatelessWidget {
                   fontSize: 13,
                 ),
               ),
-
             const SizedBox(width: 4),
-
             const Icon(
               Icons.chevron_right_rounded,
               color: AppColors.textDead,
