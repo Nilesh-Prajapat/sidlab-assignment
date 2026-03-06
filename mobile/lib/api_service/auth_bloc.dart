@@ -17,11 +17,13 @@ class AuthRegisterRequested extends AuthEvent {
   final String name;
   final String email;
   final String password;
+  final String petName;
 
   AuthRegisterRequested({
     required this.name,
     required this.email,
     required this.password,
+    required this.petName,
   });
 }
 
@@ -75,35 +77,25 @@ class AuthError extends AuthState {
 }
 
 
-/// BLOC
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   final AuthService _service;
 
   AuthBloc(this._service) : super(AuthInitial()) {
-
     on<AuthCheckRequested>(_onCheck);
-
     on<AuthLoginRequested>(_onLogin);
-
     on<AuthRegisterRequested>(_onRegister);
-
     on<AuthForgotPasswordRequested>(_onForgotPassword);
-
     on<AuthChangePasswordRequested>(_onChangePassword);
-
     on<AuthDeleteAccountRequested>(_onDeleteAccount);
-
     on<AuthLogoutRequested>(_onLogout);
   }
 
 
-  /// CHECK LOGIN
   Future<void> _onCheck(
       AuthCheckRequested event,
       Emitter<AuthState> emit,
       ) async {
-
     final loggedIn = await _service.isLoggedIn();
 
     if (!loggedIn) {
@@ -112,7 +104,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
 
     final user = await _service.getUser();
-
     emit(AuthAuthenticated(user ?? {}));
   }
 
@@ -121,22 +112,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       AuthLoginRequested event,
       Emitter<AuthState> emit,
       ) async {
-
     emit(AuthLoading());
 
     try {
-
       final user = await _service.login(
         email: event.email,
         password: event.password,
       );
-
       emit(AuthAuthenticated(user));
-
     } catch (err) {
-
       emit(AuthError(err.toString().replaceFirst('Exception: ', '')));
-
     }
   }
 
@@ -145,23 +130,18 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       AuthRegisterRequested event,
       Emitter<AuthState> emit,
       ) async {
-
     emit(AuthLoading());
 
     try {
-
       final user = await _service.register(
         name: event.name,
         email: event.email,
         password: event.password,
+        petName: event.petName,
       );
-
       emit(AuthAuthenticated(user));
-
     } catch (err) {
-
       emit(AuthError(err.toString().replaceFirst('Exception: ', '')));
-
     }
   }
 
@@ -170,23 +150,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       AuthForgotPasswordRequested event,
       Emitter<AuthState> emit,
       ) async {
-
     emit(AuthLoading());
 
     try {
-
       await _service.forgotPassword(
         email: event.email,
         petName: event.petName,
         newPassword: event.newPassword,
       );
-
       emit(AuthUnauthenticated());
-
     } catch (err) {
-
       emit(AuthError(err.toString().replaceFirst('Exception: ', '')));
-
     }
   }
 
@@ -195,59 +169,41 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       AuthChangePasswordRequested event,
       Emitter<AuthState> emit,
       ) async {
-
     emit(AuthLoading());
 
     try {
-
       await _service.changePassword(
         oldPassword: event.oldPassword,
         newPassword: event.newPassword,
       );
-
       final user = await _service.getUser();
-
       emit(AuthAuthenticated(user ?? {}));
-
     } catch (err) {
-
       emit(AuthError(err.toString().replaceFirst('Exception: ', '')));
-
     }
   }
 
 
-  /// DELETE ACCOUNT
   Future<void> _onDeleteAccount(
       AuthDeleteAccountRequested event,
       Emitter<AuthState> emit,
       ) async {
-
     emit(AuthLoading());
 
     try {
-
       await _service.deleteAccount();
-
       emit(AuthUnauthenticated());
-
     } catch (err) {
-
       emit(AuthError(err.toString().replaceFirst('Exception: ', '')));
-
     }
   }
 
 
-  /// LOGOUT
   Future<void> _onLogout(
       AuthLogoutRequested event,
       Emitter<AuthState> emit,
       ) async {
-
     await _service.logout();
-
     emit(AuthUnauthenticated());
-
   }
 }

@@ -5,7 +5,6 @@ import '../../utils/theme/colors.dart';
 import '../../widget/app_top_bar.dart';
 import '../../widget/app_button.dart';
 
-/// Theme options
 enum AppThemeMode { dark, amoled, dim }
 
 class AppearanceScreen extends StatefulWidget {
@@ -81,14 +80,44 @@ class _AppearanceScreenState extends State<AppearanceScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
 
+                    /// ── DEMO BANNER ───────────────────────
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: AppColors.layer1,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: AppColors.borderMuted),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.info_outline_rounded,
+                              size: 15, color: AppColors.textDim),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              'This is a demo — settings are not applied yet.',
+                              style: GoogleFonts.spaceGrotesk(
+                                color: AppColors.textDim,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 20),
+
                     /// ── THEME ────────────────────────────
                     _GroupLabel('THEME'),
                     const SizedBox(height: 10),
                     ..._themes.map((opt) => _ThemeCard(
-                          option: opt,
-                          selected: _theme == opt.mode,
-                          onTap: () => setState(() => _theme = opt.mode),
-                        )),
+                      option: opt,
+                      selected: _theme == opt.mode,
+                      onTap: () => setState(() => _theme = opt.mode),
+                    )),
 
                     const SizedBox(height: 20),
 
@@ -177,13 +206,12 @@ class _AppearanceScreenState extends State<AppearanceScreen> {
                             inactiveColor: AppColors.layer2,
                             onChanged: (v) => setState(() => _borderRadius = v),
                           ),
-                          /// LIVE PREVIEW
                           Container(
                             height: 36,
                             decoration: BoxDecoration(
                               color: AppColors.layer2,
                               borderRadius:
-                                  BorderRadius.circular(_borderRadius),
+                              BorderRadius.circular(_borderRadius),
                               border: Border.all(color: AppColors.border),
                             ),
                             alignment: Alignment.center,
@@ -257,9 +285,9 @@ class _ThemeOption {
   final List<Color> colors;
   const _ThemeOption(
       {required this.mode,
-      required this.name,
-      required this.description,
-      required this.colors});
+        required this.name,
+        required this.description,
+        required this.colors});
 }
 
 class _ThemeCard extends StatelessWidget {
@@ -286,7 +314,6 @@ class _ThemeCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            // mini preview swatch
             Container(
               width: 36,
               height: 36,
@@ -334,10 +361,10 @@ class _SwitchTile extends StatelessWidget {
   final ValueChanged<bool> onChanged;
   const _SwitchTile(
       {required this.icon,
-      required this.label,
-      required this.subtitle,
-      required this.value,
-      required this.onChanged});
+        required this.label,
+        required this.subtitle,
+        required this.value,
+        required this.onChanged});
 
   @override
   Widget build(BuildContext context) {
@@ -379,12 +406,12 @@ class _GroupLabel extends StatelessWidget {
   const _GroupLabel(this.text);
   @override
   Widget build(BuildContext context) => Text(
-        text,
-        style: GoogleFonts.spaceGrotesk(
-          color: AppColors.textDim,
-          fontSize: 11,
-          fontWeight: FontWeight.w500,
-          letterSpacing: 1.5,
-        ),
-      );
+    text,
+    style: GoogleFonts.spaceGrotesk(
+      color: AppColors.textDim,
+      fontSize: 11,
+      fontWeight: FontWeight.w500,
+      letterSpacing: 1.5,
+    ),
+  );
 }

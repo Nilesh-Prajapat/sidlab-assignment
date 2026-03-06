@@ -49,7 +49,6 @@ Create `backend/.env`:
 PORT=5000
 MONGO_URI=mongodb+srv://<user>:<pass>@cluster.mongodb.net/taskflow
 JWT_SECRET=your_jwt_secret
-JWT_REFRESH_SECRET=your_refresh_secret
 ```
 
 ```bash
@@ -92,22 +91,26 @@ Website runs at `http://localhost:5173`
 
 All protected routes require `Authorization: Bearer <token>`.
 
-| Method | Endpoint                  | Auth | Description       |
-| ------ | ------------------------- | ---- | ----------------- |
-| POST   | `/api/auth/register`      | —    | Register user     |
-| POST   | `/api/auth/login`         | —    | Login → JWT       |
-| GET    | `/api/tasks`              | 🔒   | List user's tasks |
-| POST   | `/api/tasks`              | 🔒   | Create task       |
-| PUT    | `/api/tasks/:id`          | 🔒   | Update task       |
-| DELETE | `/api/tasks/:id`          | 🔒   | Delete task       |
-| PATCH  | `/api/tasks/:id/complete` | 🔒   | Toggle complete   |
-| POST   | `/api/contact`            | —    | Contact form      |
+| Method | Endpoint                        | Auth | Description                        |
+| ------ | ------------------------------- | ---- | ---------------------------------- |
+| POST   | `/api/auth/register`            | —    | Register user (incl. petName)      |
+| POST   | `/api/auth/login`               | —    | Login → JWT                        |
+| POST   | `/api/auth/forgot-password`     | —    | Reset password via petName hint    |
+| PUT    | `/api/auth/change-password`     | 🔒   | Change password (old → new)        |
+| DELETE | `/api/auth/delete-account`      | 🔒   | Delete account + all tasks         |
+| GET    | `/api/tasks`                    | 🔒   | List user's tasks                  |
+| POST   | `/api/tasks`                    | 🔒   | Create task                        |
+| PUT    | `/api/tasks/:id`                | 🔒   | Update task                        |
+| DELETE | `/api/tasks/:id`                | 🔒   | Delete task                        |
+| PATCH  | `/api/tasks/:id/complete`       | 🔒   | Toggle complete                    |
+| POST   | `/api/contact`                  | —    | Contact form                       |
 
 ---
 
 ## Features
 
-- **Auth** — Register, login, logout, persistent JWT session
+- **Auth** — Register (with petName security hint), login, logout, persistent JWT session
+- **Password** — Forgot password (petName verification), change password, delete account
 - **Tasks** — Full CRUD, mark complete, due dates, priority levels (LOW/MEDIUM/HIGH)
 - **Dashboard** — Live stats: total, completed, pending
 - **Filters** — Search and filter by status, priority, keyword

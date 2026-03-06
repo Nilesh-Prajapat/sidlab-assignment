@@ -6,8 +6,6 @@ class AuthService {
   static const _base = 'https://sidlab-assignment.vercel.app/api';
   final _storage = const FlutterSecureStorage();
 
-  // ─── Safe JSON decode ────────────────────────────────────────────────────────
-  // Returns null if the body is not valid JSON (e.g. HTML error pages, empty).
   Map<String, dynamic>? _tryDecode(String body) {
     try {
       final decoded = jsonDecode(body);
@@ -18,14 +16,12 @@ class AuthService {
     }
   }
 
-  // Extracts the best human-readable error message from a response.
   String _errorMessage(http.Response res, String fallback) {
     final data = _tryDecode(res.body);
     if (data != null) {
       final msg = data['message'] ?? data['error'] ?? data['msg'];
       if (msg != null) return msg.toString();
     }
-    // Body is HTML / plain-text / empty – use status code instead.
     if (res.statusCode >= 500) return 'Server error (${res.statusCode}). Please try again later.';
     if (res.statusCode == 404) return 'Endpoint not found (${res.statusCode}).';
     if (res.statusCode == 401) return 'Unauthorised. Please log in again.';
@@ -33,11 +29,11 @@ class AuthService {
     return '$fallback (HTTP ${res.statusCode})';
   }
 
-  // ─── REGISTER ───────────────────────────────────────────────────────────────
   Future<Map<String, dynamic>> register({
     required String name,
     required String email,
     required String password,
+    required String petName,
   }) async {
     final http.Response res;
     try {
@@ -45,7 +41,12 @@ class AuthService {
           .post(
         Uri.parse('$_base/auth/register'),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'name': name, 'email': email, 'password': password}),
+        body: jsonEncode({
+          'name': name,
+          'email': email,
+          'password': password,
+          'petName': petName,
+        }),
       )
           .timeout(const Duration(seconds: 15));
     } catch (e) {
@@ -71,7 +72,6 @@ class AuthService {
     return Map<String, dynamic>.from(user as Map);
   }
 
-  // ─── LOGIN ──────────────────────────────────────────────────────────────────
   Future<Map<String, dynamic>> login({
     required String email,
     required String password,
@@ -108,7 +108,6 @@ class AuthService {
     return Map<String, dynamic>.from(user as Map);
   }
 
-  // ─── FORGOT PASSWORD ────────────────────────────────────────────────────────
   Future<void> forgotPassword({
     required String email,
     required String petName,
@@ -136,7 +135,6 @@ class AuthService {
     }
   }
 
-  // ─── CHANGE PASSWORD ────────────────────────────────────────────────────────
   Future<void> changePassword({
     required String oldPassword,
     required String newPassword,
@@ -153,7 +151,10 @@ class AuthService {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
         },
-        body: jsonEncode({'oldPassword': oldPassword, 'newPassword': newPassword}),
+        body: jsonEncode({
+          'oldPassword': oldPassword,
+          'newPassword': newPassword,
+        }),
       )
           .timeout(const Duration(seconds: 15));
     } catch (e) {
@@ -166,7 +167,6 @@ class AuthService {
     }
   }
 
-  // ─── DELETE ACCOUNT ─────────────────────────────────────────────────────────
   Future<void> deleteAccount() async {
     final token = await getToken();
     if (token == null) throw Exception('Not logged in.');
@@ -191,12 +191,10 @@ class AuthService {
     await logout();
   }
 
-  // ─── LOGOUT ─────────────────────────────────────────────────────────────────
   Future<void> logout() async {
     await _storage.deleteAll();
   }
 
-  // ─── HELPERS ────────────────────────────────────────────────────────────────
   Future<String?> getToken() async => _storage.read(key: 'token');
 
   Future<Map<String, dynamic>?> getUser() async {

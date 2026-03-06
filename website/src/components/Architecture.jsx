@@ -105,8 +105,11 @@ const mobileLayers = [
     title: 'API Endpoints',
     sublabel: '// REST API quick reference',
     rows: [
-      { label: 'POST', value: '/api/auth/register — create account' },
+      { label: 'POST', value: '/api/auth/register — create account (petName)' },
       { label: 'POST', value: '/api/auth/login — returns JWT' },
+      { label: 'POST', value: '/api/auth/forgot-password — reset via petName' },
+      { label: 'PUT 🔒', value: '/api/auth/change-password — change password' },
+      { label: 'DELETE 🔒', value: '/api/auth/delete-account — delete account' },
       { label: 'GET 🔒', value: '/api/tasks — list user tasks' },
       { label: 'POST 🔒', value: '/api/tasks — create task' },
       { label: 'PUT 🔒', value: '/api/tasks/:id — update task' },
@@ -223,8 +226,8 @@ export default function Architecture() {
             <ArrowDown />
             <SectionLabel label="// routes" />
             <div className="grid grid-cols-3 gap-3">
-              <DiagramBox label="/api/auth" sublabel="// public"
-                items={['POST /register', 'POST /login']} />
+              <DiagramBox label="/api/auth" sublabel="// mixed auth"
+                items={['POST /register', 'POST /login', 'POST /forgot-password', 'PUT /change-password 🔒', 'DELETE /delete-account 🔒']} />
               <DiagramBox label="/api/tasks" sublabel="// 🔒 protected"
                 items={['GET /', 'POST /', 'PUT /:id', 'DELETE /:id', 'PATCH /:id/complete']} />
               <DiagramBox label="/api/contact" sublabel="// public"
@@ -238,7 +241,7 @@ export default function Architecture() {
             <SectionLabel label="// controllers" />
             <div className="grid grid-cols-3 gap-3">
               <DiagramBox label="auth_controller.js"
-                items={['register → bcrypt.hash → User.create', 'login → bcrypt.compare → jwt.sign']} />
+                items={['register → bcrypt.hash → User.create', 'login → bcrypt.compare → jwt.sign', 'forgotPassword → petName verify → reset', 'changePassword 🔒 · deleteAccount 🔒']} />
               <DiagramBox label="task_controller.js"
                 items={['get_tasks → Task.find({ userId })', 'create_task · update_task', 'delete_task · toggle_complete']} />
               <DiagramBox label="contact_controller.js"
@@ -248,7 +251,7 @@ export default function Architecture() {
             <SectionLabel label="// models (Mongoose)" />
             <div className="grid grid-cols-3 gap-3">
               <DiagramBox label="User model"
-                items={['name: String (req)', 'email: String (unique)', 'password: String (hashed)', 'timestamps: true']} />
+                items={['name: String (req)', 'email: String (unique)', 'password: String (hashed)', 'petName: String (req)', 'timestamps: true']} />
               <DiagramBox label="Task model"
                 items={['userId: ObjectId → User', 'title: String (req)', 'completed: Boolean', 'dueDate: Date', 'priority: LOW|MEDIUM|HIGH', 'virtual: status']} />
               <DiagramBox label="Contact model"
@@ -268,7 +271,7 @@ export default function Architecture() {
           <MacroBlock title="Database — MongoDB Atlas" sublabel="// cloud · 3 collections">
             <div className="grid grid-cols-3 gap-3">
               <DiagramBox label="users collection"
-                items={['_id', 'name', 'email (unique index)', 'password (bcrypt)', 'createdAt / updatedAt']} />
+                items={['_id', 'name', 'email (unique index)', 'password (bcrypt)', 'petName (security hint)', 'createdAt / updatedAt']} />
               <DiagramBox label="tasks collection"
                 items={['_id', 'userId → ref: users', 'title · description', 'completed: false', 'dueDate · priority', 'createdAt / updatedAt']} />
               <DiagramBox label="contacts collection"
@@ -286,8 +289,11 @@ export default function Architecture() {
               </div>
             </div>
             <div className="px-5 py-2">
-              <Endpoint method="POST" path="/api/auth/register" desc="Create account" auth={false} />
+              <Endpoint method="POST" path="/api/auth/register" desc="Create account (petName)" auth={false} />
               <Endpoint method="POST" path="/api/auth/login" desc="Get JWT" auth={false} />
+              <Endpoint method="POST" path="/api/auth/forgot-password" desc="Reset via petName" auth={false} />
+              <Endpoint method="PUT" path="/api/auth/change-password" desc="Change password" auth={true} />
+              <Endpoint method="DELETE" path="/api/auth/delete-account" desc="Delete account" auth={true} />
               <Endpoint method="GET" path="/api/tasks" desc="List tasks" auth={true} />
               <Endpoint method="POST" path="/api/tasks" desc="Create task" auth={true} />
               <Endpoint method="PUT" path="/api/tasks/:id" desc="Update task" auth={true} />

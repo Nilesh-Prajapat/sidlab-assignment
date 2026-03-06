@@ -28,7 +28,10 @@ TaskFlow is a **personal task manager** — each authenticated user can only see
 │                                                                   │
 │  cors() → express.json() → routes → auth_middleware → controller │
 │                                                                   │
-│  /api/auth    → auth_controller    (register, login)             │
+│  /api/auth    → auth_controller    (register, login,             │
+│                                    forgot-password,              │
+│                                    change-password,              │
+│                                    delete-account)               │
 │  /api/tasks   → task_controller    (CRUD, userId scoped)         │
 │  /api/contact → contact_controller (store message)               │
 └────────────────────────────┬──────────────────────────────────────┘
@@ -38,7 +41,7 @@ TaskFlow is a **personal task manager** — each authenticated user can only see
 ┌───────────────────────────────────────────────────────────────────┐
 │                     MongoDB Atlas                                 │
 │                                                                   │
-│  users     { name, email (unique), password (bcrypt) }           │
+│  users     { name, email (unique), password (bcrypt), petName } │
 │  tasks     { userId (ref), title, priority, completed, dueDate } │
 │  contacts  { name, email, message }                               │
 └───────────────────────────────────────────────────────────────────┘
@@ -59,15 +62,17 @@ backend/
 │   ├── middleware/
 │   │   └── auth.js             # JWT verify → inject req.userId
 │   ├── models/
-│   │   ├── user.js             # User schema
+│   │   ├── user.js             # User schema (name, email, password, petName)
 │   │   ├── task.js             # Task schema + virtual status field
 │   │   └── contact.js          # Contact schema
 │   ├── controllers/
-│   │   ├── auth_controller.js  # register, login
+│   │   ├── auth_controller.js  # register, login, forgotPassword,
+│   │   │                       # changePassword, deleteAccount
 │   │   ├── task_controller.js  # get, create, update, delete, toggle
 │   │   └── contact_controller.js
 │   └── routes/
-│       ├── auth_route.js
+│       ├── auth_route.js       # register, login, forgot-password,
+│       │                       # change-password, delete-account
 │       ├── task_route.js
 │       └── contact_route.js
 ├── index.js                    # Vercel entry point
@@ -139,7 +144,8 @@ All three layers (backend, mobile, website) live in one repository for easy subm
 | ------------------ | -------------------------------------------------------------- |
 | Password storage   | `bcrypt` hash, never plain text                                |
 | Token transmission | `Authorization: Bearer` header only                            |
-| Route protection   | `auth_middleware` on all `/api/tasks` routes                   |
+| Route protection   | `auth_middleware` on `/api/tasks` + change-password, delete-account |
+| Password recovery  | `petName` security hint — no email link, no OTP required       |
 | CORS               | `cors()` enabled for React + Flutter origins                   |
 | Env secrets        | `.env` file, never committed (`/backend/.env` in `.gitignore`) |
 | Token expiry       | JWT signed with expiry; client handles 401 by re-login         |
